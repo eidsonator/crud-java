@@ -1,0 +1,19 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Crud</title>
+</head>
+<body>
+    <h1>Crud</h1>
+    <a th:href="@{/create}">Create</a>
+    <table>
+        <tr th:each="person: ${people}">
+            <td th:text="${person.firstName}"/>
+            <td th:text="${person.lastName}"/>
+            <td><a th:href="@{/details(id=${person.id})}">Details</a></td>
+        </tr>
+    </table>
+</body>
+</html>
