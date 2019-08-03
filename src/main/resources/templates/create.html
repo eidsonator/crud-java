@@ -3,9 +3,23 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Create</title>
 </head>
 <body>
 <h1>Create</h1>
+<form action="#" th:action="@{/create}" th:object="${person}" method="post">
+    <p>
+        <label>First Name</label>
+        <input th:field="*{firstName}" th:value="${person.firstName}"/>
+    </p>
+    <p>
+        <label>Last Name</label>
+        <input th:field="*{lastName}" th:value="${person.lastName}"/>
+    </p>
+    <input type="hidden" th:field="*{id}" th:value="${person.id}">
+    <button>Submit</button>
+</form>
+
 </body>
 </html>

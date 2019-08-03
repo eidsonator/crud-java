@@ -3,9 +3,13 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="5;url=/" />
     <title>Title</title>
 </head>
 <body>
-
+<h1>Result</h1>
+<p th:text="'First Name: ' + ${person.firstName}" />
+<p th:text="'Last Name: ' + ${person.lastName}" />
+Will redirect in 5 seconds or click <a th:href="@{/}">here</a>
 </body>
 </html>

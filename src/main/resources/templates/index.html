@@ -13,6 +13,9 @@
             <td th:text="${person.firstName}"/>
             <td th:text="${person.lastName}"/>
             <td><a th:href="@{/details(id=${person.id})}">Details</a></td>
+            <td><a th:href="@{/edit(id=${person.id})}">Edit</a></td>
+            <td><a th:href="@{/delete(id=${person.id})}">Delete</a></td>
+
         </tr>
     </table>
 </body>
