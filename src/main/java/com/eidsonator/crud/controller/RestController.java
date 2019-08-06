@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.List;
 
-@CrossOrigin(origins = {"http://127.0.0.1:3000", "http://localhost:3000", "https://crud-react-eidsonator.herokuapp.com/"})
+@CrossOrigin(origins = {"http://127.0.0.1:3000", "http://localhost:3000", "https://crud-react-eidsonator.herokuapp.com"})
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE, value = "/persons")
 public class RestController {
