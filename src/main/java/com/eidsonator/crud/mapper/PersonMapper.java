@@ -2,6 +2,7 @@ package com.eidsonator.crud.mapper;
 
 import com.eidsonator.crud.model.Person;
 import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,6 +23,12 @@ public interface PersonMapper {
 
     @Select("Select id, firstName, lastName FROM person")
     List<Person> findAll();
+
+    @Select("Select id, firstName, lastName FROM person")
+    List<Person> getPage(RowBounds rowBounds);
+
+    @Select("SELECT COUNT(*) FROM person")
+    int count();
 
     @Delete("DELETE FROM person WHERE id = #{id}")
     void delete(long id);
