@@ -24,8 +24,8 @@ public interface PersonMapper {
     @Select("Select id, firstName, lastName FROM person")
     List<Person> findAll();
 
-    @Select("Select id, firstName, lastName FROM person")
-    List<Person> getPage(RowBounds rowBounds);
+    @Select("Select id, firstName, lastName FROM person ORDER BY ${columnName} ${sortDir}")
+    List<Person> getPage(String columnName, String sortDir, RowBounds rowBounds);
 
     @Select("SELECT COUNT(*) FROM person")
     int count();

@@ -22,46 +22,59 @@ public class RestController {
 
     @Autowired
     private PersonMapper personMapper;
+    private Integer page;
+    private Integer perPage;
+    private String sortBy;
+    private String sortDir;
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<Person>> get(@RequestParam("page") Optional<Integer> page, @RequestParam("perPage") Optional<Integer> perPage) {
-
-        int _page = page.orElse(1);
-        int _perPage = perPage.orElse(2);
-
-//        Link: </products?page=5&perPage=20>;rel=self,</products?page=0&perPage=20>;rel=first,</products?page=4&perPage=20>;rel=previous,</products?page=6&perPage=20>;rel=next,</products?page=26&perPage=20>;rel=last
+    public ResponseEntity<List<Person>> get(
+            @RequestParam("page") Optional<Integer> page,
+            @RequestParam("perPage") Optional<Integer> perPage,
+            @RequestParam("sortBy") Optional<String> sortBy,
+            @RequestParam("sortDir") Optional<String> sortDir
+    ) {
+        this.page = page.orElse(1);
+        this.perPage = perPage.orElse(10);
+        this.sortBy = sortBy.orElse("lastName");
+        this.sortDir = sortDir.orElse("ASC");
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("links", getLinkHeader(_page, _perPage));
-        headers.set("access-control-expose-headers", "links,x-page");
-        headers.set("x-page", Integer.toString(_page));
-        RowBounds rowBounds = new RowBounds( (_page - 1) * _perPage, _perPage);
-        return new ResponseEntity<List<Person>>(personMapper.getPage(rowBounds), headers, HttpStatus.OK);
+        headers.set("links", getLinkHeader());
+        headers.set("access-control-expose-headers", "links,x-page,x-last-page");
+        headers.set("x-page", Integer.toString(this.page));
+        headers.set("x-last-page", Integer.toString(getLastPage(this.perPage)));
+        int offset = (this.page - 1) * this.perPage;
+        RowBounds rowBounds = new RowBounds(offset, this.perPage);
+        return new ResponseEntity<List<Person>>(personMapper.getPage(this.sortBy, this.sortDir, rowBounds), headers, HttpStatus.OK);
     }
 
-    private String getLinkHeader(int page, int perPage) {
-        int count = personMapper.count();
-        int lastPage = count/perPage + 1;
+    private String getLinkHeader() {
+        int lastPage = getLastPage(perPage);
 
-        StringBuilder links = new StringBuilder(String.format("</persons?page=1&perPage=%d>;rel=first,", perPage));
-        links.append(String.format("</persons?page=%d&perPage=%d>;rel=prev,", page - 1, perPage));
+        StringBuilder links = new StringBuilder(String.format("</persons?page=1&perPage=%d&sortBy=%s&sortDir=%s>;rel=first,", perPage, sortBy, sortDir));
+        links.append(String.format("</persons?page=%d&perPage=%d&sortBy=%s&sortDir=%s>;rel=prev,", page - 1, perPage, sortBy, sortDir));
 
-        int displayPage = 1;
-        if (page > 3) {
-            displayPage = page - 2;
+        int displayPage = page;
+        if (page + 10 >= lastPage) {
+            displayPage = Math.max(1, lastPage - 10);
         }
 
-
-        int displayPages = Math.min(lastPage, 10) + displayPage - 1;
+        int displayPages = Math.min(lastPage, 10) + displayPage;
 
         for (; displayPage <= displayPages; displayPage++) {
-            links.append(String.format("</persons?page=%d&perPage=%d>;rel=%s,",  displayPage, perPage, displayPage));
+            links.append(String.format("</persons?page=%d&perPage=%d&sortBy=%s&sortDir=%s>;rel=%s,",  displayPage, perPage, sortBy, sortDir, displayPage));
         }
-        links.append(String.format("</persons?page=%d&perPage=%d>;rel=next,", page + 1, perPage));
-        links.append(String.format("</persons?page=%d&perPage=%d>;rel=last", lastPage, perPage));
+        links.append(String.format("</persons?page=%d&perPage=%d&sortBy=%s&sortDir=%s>;rel=next,", page + 1, perPage, sortBy, sortDir));
+        links.append(String.format("</persons?page=%d&perPage=%d&sortBy=%s&sortDir=%s>;rel=last", lastPage, perPage, sortBy, sortDir));
 
         return links.toString();
+    }
 
+    private int getLastPage(int perPage) {
+        int count = personMapper.count();
+        int lastPage = count / perPage;
+        return count % perPage == 0 ? lastPage : lastPage + 1;
     }
 
     @RequestMapping(path = "/{person}")
