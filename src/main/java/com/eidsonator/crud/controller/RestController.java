@@ -60,7 +60,7 @@ public class RestController {
             displayPage = Math.max(1, lastPage - 10);
         }
 
-        int displayPages = Math.min(lastPage, 10) + displayPage;
+        int displayPages = Math.min(lastPage, 10);
 
         for (; displayPage <= displayPages; displayPage++) {
             links.append(String.format("</persons?page=%d&perPage=%d&sortBy=%s&sortDir=%s>;rel=%s,",  displayPage, perPage, sortBy, sortDir, displayPage));
@@ -74,7 +74,7 @@ public class RestController {
     private int getLastPage(int perPage) {
         int count = personMapper.count();
         int lastPage = count / perPage;
-        return count % perPage == 0 ? lastPage : lastPage + 1;
+        return lastPage * perPage + 1 > count  ? lastPage : lastPage + 1;
     }
 
     @RequestMapping(path = "/{person}")
